@@ -1,6 +1,4 @@
 // Simulación de API para notas personales
-let notas: { id: number; texto: string }[] = []
-
 export async function crearNotaApi(texto: string, userId: number) {
   const res = await fetch('http://localhost:3000/notes', {
     method: 'POST',

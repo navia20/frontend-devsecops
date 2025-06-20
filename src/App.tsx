@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import Login from './components/Login'
 import Home from './components/Home'
 import './App.css'
-import { crearNotaApi, listarNotasApi, eliminarNotaApi } from './api/notes'
+import { listarNotasApi, eliminarNotaApi } from './api/notes'
 
 interface Note {
   id: number
