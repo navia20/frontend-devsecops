@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { loginApi } from '../api/auth'
 
 interface LoginProps {
-  onLogin?: (usuario: string) => void
+  onLogin?: (usuario: string, userId: number) => void
 }
 
 const Login: React.FC<LoginProps> = ({ onLogin }) => {
@@ -18,7 +18,7 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
     const res = await loginApi({ usuario, contrasena })
     setLoading(false)
     if (res.success) {
-      if (onLogin) onLogin(usuario)
+      if (onLogin) onLogin(res.user.username, res.user.id)
     } else {
       setError(res.error || 'Error desconocido')
     }
@@ -58,6 +58,7 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
         </button>
       </form>
       <p><small>Usuario: admin, Contraseña: 123456</small></p>
+      <p><small>Usuario: test, Contraseña: 1234</small></p>
     </div>
   )
 }

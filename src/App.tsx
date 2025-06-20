@@ -1,7 +1,8 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Login from './components/Login'
 import Home from './components/Home'
 import './App.css'
+import { crearNotaApi, listarNotasApi, eliminarNotaApi } from './api/notes'
 
 interface Note {
   id: number
@@ -9,18 +10,27 @@ interface Note {
 }
 
 function App() {
-  const [usuarioLogueado, setUsuarioLogueado] = useState<string | null>(null)
+  const [usuarioLogueado, setUsuarioLogueado] = useState<{ username: string, id: number } | null>(null)
   const [notas, setNotas] = useState<Note[]>([])
 
-  const handleAddNote = (texto: string) => {
-    setNotas(prev => [
-      { id: Date.now(), texto },
-      ...prev
-    ])
+  // Cargar notas al loguearse
+  useEffect(() => {
+    if (usuarioLogueado) {
+      listarNotasApi(usuarioLogueado.id).then(res => {
+        if (res.success && res.notes) setNotas(res.notes)
+      })
+    }
+  }, [usuarioLogueado])
+
+  const handleAddNote = (nota: { id: number; texto: string }) => {
+    setNotas(prev => [nota, ...prev])
   }
 
-  const handleDeleteNote = (id: number) => {
-    setNotas(prev => prev.filter(nota => nota.id !== id))
+  const handleDeleteNote = async (id: number) => {
+    const res = await eliminarNotaApi(id)
+    if (res.success) {
+      setNotas(prev => prev.filter(nota => nota.id !== id))
+    }
   }
 
   const handleLogout = () => {
@@ -29,16 +39,17 @@ function App() {
   }
 
   if (!usuarioLogueado) {
-    return <Login onLogin={setUsuarioLogueado} />
+    return <Login onLogin={(username, id) => setUsuarioLogueado({ username, id })} />
   }
 
   return (
     <Home
-      usuario={usuarioLogueado}
+      usuario={usuarioLogueado.username}
       notas={notas}
       onAddNote={handleAddNote}
       onDeleteNote={handleDeleteNote}
       onLogout={handleLogout}
+      userId={usuarioLogueado.id}
     />
   )
 }

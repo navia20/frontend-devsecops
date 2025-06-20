@@ -1,18 +1,23 @@
 import { useState } from 'react'
 import type { FormEvent } from 'react'
+import { crearNotaApi } from '../api/notes'
 
 interface NoteFormProps {
-  onAdd: (texto: string) => void
+  onAdd: (nota: { id: number; texto: string }) => void
+  userId: number
 }
 
-const NoteForm: React.FC<NoteFormProps> = ({ onAdd }) => {
+const NoteForm: React.FC<NoteFormProps> = ({ onAdd, userId }) => {
   const [texto, setTexto] = useState('')
 
-  const handleSubmit = (e: FormEvent) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault()
     if (texto.trim()) {
-      onAdd(texto)
-      setTexto('')
+      const res = await crearNotaApi(texto, userId)
+      if (res.success && res.note) {
+        onAdd(res.note)
+        setTexto('')
+      }
     }
   }
 
