@@ -1,0 +1,32 @@
+name: SonarCloud Analysis Frontend
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  sonarcloud-frontend:
+    name: Análisis SonarCloud Frontend
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Instalar dependencias
+        run: npm install --legacy-peer-deps
+        working-directory: frontend-devsecops
+      - name: Ejecutar tests y generar cobertura
+        run: npm run test -- --coverage || true
+        working-directory: frontend-devsecops
+      - name: SonarCloud Scan
+        uses: SonarSource/sonarcloud-github-action@v2
+        with:
+          args: >
+            -Dsonar.login=${{ secrets.SONAR_TOKEN_FRONT }}
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_FRONT }}
+        working-directory: frontend-devsecops
