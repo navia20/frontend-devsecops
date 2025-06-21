@@ -20,13 +20,14 @@ jobs:
         run: npm install --legacy-peer-deps
         working-directory: frontend-devsecops
       - name: Ejecutar tests y generar cobertura
-        run: npm run test -- --coverage || true
+        run: npm run test -- --coverage
         working-directory: frontend-devsecops
       - name: SonarCloud Scan
         uses: SonarSource/sonarcloud-github-action@v2
         with:
           args: >
             -Dsonar.login=${{ secrets.SONAR_TOKEN }}
+            -Dsonar.javascript.lcov.reportPaths=frontend-devsecops/coverage/lcov.info
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         working-directory: frontend-devsecops
